@@ -1,25 +1,39 @@
+
+import 'package:ecommerce_app_huma_volve/features/home/models/product_model.dart';
 import 'package:flutter/material.dart';
-import '../../../core/dummy_data.dart';
+
 import '../../../core/theme.dart';
 import '../../details/screens/product_details_screen.dart';
 
 class ProductCard extends StatelessWidget {
-  final Product product;
+  final ProductModel product;
 
-  const ProductCard({super.key, required this.product});
+  const ProductCard({
+    super.key,
+    required this.product,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final String imageUrl = product.images.isNotEmpty
+        ? product.images.first
+        : '';
+
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
           PageRouteBuilder(
             transitionDuration: const Duration(milliseconds: 500),
-            pageBuilder: (context, animation, secondaryAnimation) => 
-                ProductDetailsScreen(product: product),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              return FadeTransition(opacity: animation, child: child);
+            pageBuilder: (context, animation, secondaryAnimation) {
+              return ProductDetailsScreen(product: product);
+            },
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return FadeTransition(
+                opacity: animation,
+                child: child,
+              );
             },
           ),
         );
@@ -47,12 +61,33 @@ class ProductCard extends StatelessWidget {
                   Hero(
                     tag: 'product-${product.id}',
                     child: ClipRRect(
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-                      child: Image.network(
-                        product.imageUrl,
-                        fit: BoxFit.cover,
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(24),
+                      ),
+                      child: SizedBox(
                         width: double.infinity,
                         height: double.infinity,
+                        child: imageUrl.isNotEmpty
+                            ? Image.network(
+                                imageUrl,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const Center(
+                                    child: Icon(
+                                      Icons.image_not_supported_outlined,
+                                      size: 40,
+                                      color: Colors.grey,
+                                    ),
+                                  );
+                                },
+                              )
+                            : const Center(
+                                child: Icon(
+                                  Icons.image_not_supported_outlined,
+                                  size: 40,
+                                  color: Colors.grey,
+                                ),
+                              ),
                       ),
                     ),
                   ),
@@ -78,31 +113,33 @@ class ProductCard extends StatelessWidget {
             Expanded(
               flex: 2,
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Text(
-                      product.name,
+                      product.title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 16,
                         height: 1.2,
                       ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
                     ),
                     const Spacer(),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          '\$${product.price.toStringAsFixed(2)}',
-                          style: const TextStyle(
-                            color: AppTheme.primary,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
+                        Flexible(
+                          child: Text(
+                            '\$${product.price.toStringAsFixed(2)}',
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: AppTheme.primary,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
                           ),
                         ),
                         Container(
