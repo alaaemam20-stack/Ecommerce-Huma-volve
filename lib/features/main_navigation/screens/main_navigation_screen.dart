@@ -1,4 +1,10 @@
 import 'package:ecommerce_app_huma_volve/core/network/api_client.dart';
+import 'package:ecommerce_app_huma_volve/features/home/data/data_source/home_remote_data_source.dart';
+import 'package:ecommerce_app_huma_volve/features/home/data/data_source/home_remote_data_source_imp.dart';
+import 'package:ecommerce_app_huma_volve/features/home/data/repo/home_repo_imp.dart';
+import 'package:ecommerce_app_huma_volve/features/home/domain/repo/home_repo.dart';
+import 'package:ecommerce_app_huma_volve/features/home/domain/use_case/get_category_usecase.dart';
+import 'package:ecommerce_app_huma_volve/features/home/domain/use_case/get_product_usecase.dart';
 import 'package:ecommerce_app_huma_volve/features/home/view_model/home_cubit.dart';
 import 'package:ecommerce_app_huma_volve/features/home/service/home_service.dart';
 import 'package:flutter/material.dart';
@@ -18,16 +24,27 @@ class MainNavigationScreen extends StatefulWidget {
 
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _currentIndex = 0;
+  late final GetCategoryUsecase getCategoryUsecase;
+  late final GetProductUsecase getProductUsecase;
+  late final HomeRepo homeRepo;
+  late final ApiClient apiClient;
   late HomeCubit homeCubit;
   late HomeService homeService;
-  late ApiClient apiClient;
+  late final HomeRemoteDataSource homeRemoteDataSource;
   @override
   void initState() {
-    super.initState();
     apiClient = ApiClient();
-    homeService = HomeService(apiClient);
-    homeCubit = HomeCubit(homeService);
+    homeRemoteDataSource = HomeRemoteDataSourceImp(apiClient);
+
+    homeRepo = HomeRepoImp(homeRemoteDataSource);
+    getCategoryUsecase = GetCategoryUsecase(homeRepo);
+    getProductUsecase = GetProductUsecase(homeRepo);
+    homeCubit = HomeCubit(
+      getCategoriesUseCase: getCategoryUsecase,
+      getProductsUseCase: getProductUsecase,
+    );
     homeCubit.loadData();
+    super.initState();
   }
 
   @override

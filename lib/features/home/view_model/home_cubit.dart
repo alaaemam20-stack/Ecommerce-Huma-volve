@@ -1,52 +1,55 @@
-import 'package:ecommerce_app_huma_volve/features/home/domain/use_case/get_category_usecase.dart';
-import 'package:ecommerce_app_huma_volve/features/home/domain/use_case/get_product_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:ecommerce_app_huma_volve/features/home/view_model/home_state.dart';
-import 'package:ecommerce_app_huma_volve/features/home/data/models/categories_model.dart';
-import 'package:ecommerce_app_huma_volve/features/home/data/models/product_model.dart';
-import 'package:ecommerce_app_huma_volve/features/home/service/home_service.dart';
+import 'package:ecommerce_app_huma_volve/features/home/domain/use_case/get_category_usecase.dart';
+import 'package:ecommerce_app_huma_volve/features/home/domain/use_case/get_product_usecase.dart';
 
 class HomeCubit extends Cubit<HomeStates> {
-  final HomeService homeService;
   final GetCategoryUsecase getCategoriesUseCase;
   final GetProductUsecase getProductsUseCase;
 
-  HomeCubit(this.homeService) : super(HomeInitialState());
-
-  List<CategoryModel> categories = [];
-  List<ProductModel> products = [];
-
-  int? selectedCategoryId;
+  HomeCubit({
+    required this.getCategoriesUseCase,
+    required this.getProductsUseCase,
+  }) : super(HomeInitialState());
 
   Future<void> loadData() async {
     emit(HomeLoadingCategoryState());
 
-    try {
-      categories = await homeService.getAllCategories();
+    final categoryResult = await getCategoriesUseCase.invoke();
 
-      emit(HomeSuccessCategoryState(categories));
+    await categoryResult.fold(
+      (failure) async {
+        emit(HomeErrorCategoryState(failure.failureMessage));
+      },
+      (categoryList) async {
+        emit(HomeSuccessCategoryState(categoryList));
 
-      if (categories.isNotEmpty) {
-        selectedCategoryId = categories.first.id;
-        await getProducts(selectedCategoryId!);
-      }
-    } catch (e) {
-      emit(HomeErrorCategoryState(e.toString()));
-    }
+        // Stop if there are no categories.
+        if (categoryList.isEmpty) {
+          return;
+        }
+
+        // Get products for the first category.
+        final categoryId = categoryList.first.id;
+
+        await getProductsByCategories(categoryId);
+      },
+    );
   }
 
-  Future<void> getProducts(int categoryId) async {
-    selectedCategoryId = categoryId;
-
+  Future<void> getProductsByCategories(int categoryId) async {
     emit(HomeLoadingProductsState());
 
-    try {
-      products = await homeService.getProducts(categoryId);
+    final productResult = await getProductsUseCase.invoke(categoryId);
 
-      emit(HomeSuccessProductsState(products));
-    } catch (e) {
-      emit(HomeErrorProductsState(e.toString()));
-    }
+    productResult.fold(
+      (failure) {
+        emit(HomeErrorProductsState(failure.failureMessage));
+      },
+      (productList) {
+        emit(HomeSuccessProductsState(productList));
+      },
+    );
   }
 }

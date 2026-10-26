@@ -150,7 +150,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       _selectedCategoryIndex = index;
                                     });
 
-                                    context.read<HomeCubit>().getProducts(
+                                    context.read<HomeCubit>().getProductsByCategories(
                                       categories[index].id,
                                     );
                                   },
