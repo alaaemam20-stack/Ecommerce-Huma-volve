@@ -1,7 +1,7 @@
 import 'package:ecommerce_app_huma_volve/core/constants/api_endpoints.dart';
 import 'package:ecommerce_app_huma_volve/core/network/api_client.dart';
-import 'package:ecommerce_app_huma_volve/features/home/models/categories_model.dart';
-import 'package:ecommerce_app_huma_volve/features/home/models/product_model.dart';
+import 'package:ecommerce_app_huma_volve/features/home/data/models/categories_model.dart';
+import 'package:ecommerce_app_huma_volve/features/home/data/models/product_model.dart';
 
 class HomeService {
   final ApiClient apiClient;

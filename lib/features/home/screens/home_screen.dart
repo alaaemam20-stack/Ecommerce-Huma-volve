@@ -1,5 +1,5 @@
-import 'package:ecommerce_app_huma_volve/features/home/cubit/cubit.dart';
-import 'package:ecommerce_app_huma_volve/features/home/cubit/home_state.dart';
+import 'package:ecommerce_app_huma_volve/features/home/view_model/home_cubit.dart';
+import 'package:ecommerce_app_huma_volve/features/home/view_model/home_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

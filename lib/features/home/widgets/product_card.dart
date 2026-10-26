@@ -1,5 +1,5 @@
 
-import 'package:ecommerce_app_huma_volve/features/home/models/product_model.dart';
+import 'package:ecommerce_app_huma_volve/features/home/data/models/product_model.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/theme.dart';

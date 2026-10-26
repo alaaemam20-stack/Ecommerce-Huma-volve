@@ -1,5 +1,5 @@
-import 'package:ecommerce_app_huma_volve/features/home/models/categories_model.dart';
-import 'package:ecommerce_app_huma_volve/features/home/models/product_model.dart';
+import 'package:ecommerce_app_huma_volve/features/home/data/models/categories_model.dart';
+import 'package:ecommerce_app_huma_volve/features/home/data/models/product_model.dart';
 
 abstract class HomeStates {}
 
