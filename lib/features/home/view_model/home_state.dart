@@ -35,8 +35,8 @@ class HomeErrorProductsState extends HomeStates {
 
 class HomeLoadingMoreProductsState extends HomeStates {}
 
-class productsLodingMoreErrorState extends HomeStates {
+class ProductsLoadingMoreErrorState extends HomeStates {
   final String message;
 
-  productsLodingMoreErrorState({required this.message});
+  ProductsLoadingMoreErrorState({required this.message});
 }

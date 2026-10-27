@@ -22,17 +22,25 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     scrollController = ScrollController();
     scrollController.addListener(_onlisten);
-    // Load data when the screen is initialized
     final homeCubit = context.read<HomeCubit>();
     homeCubit.loadData();
   }
 
   void _onlisten() {
-    final pixels = scrollController.position.pixels;
-    final max = scrollController.position.maxScrollExtent;
-    final int triggerDistance=200;
-    print(" pixels: $pixels max: $max");
-    if(pixels>=max-triggerDistance){}
+    if (!scrollController.hasClients) return;
+
+    final position = scrollController.position;
+
+    if (position.pixels >= position.maxScrollExtent - 200) {
+      context.read<HomeCubit>().loadMoreProducts();
+    }
+  }
+
+  @override
+  void dispose() {
+    scrollController.removeListener(_onlisten);
+    scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -233,6 +241,21 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               ),
             ),
+            BlocBuilder<HomeCubit, HomeStates>(
+              builder: (context, state) {
+                if (state is HomeLoadingMoreProductsState) {
+                  return SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.all(25),
+                      child: Center(child: CircularProgressIndicator()),
+                    ),
+                  );
+                }
+
+                return const SliverToBoxAdapter(child: SizedBox(height: 24));
+              },
+            ),
+
             const SliverToBoxAdapter(child: SizedBox(height: 24)),
           ],
         ),
