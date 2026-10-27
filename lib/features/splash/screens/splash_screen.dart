@@ -3,7 +3,7 @@ import 'package:ecommerce_app_huma_volve/features/main_navigation/screens/main_n
 import 'package:flutter/material.dart';
 
 import '../../../core/theme.dart';
-import '../../auth/login/screens/login_screen.dart';
+import '../../auth/peresentation/view/screens/login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -18,40 +18,51 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     _navigateToNext();
   }
-
-  Future<void> _navigateToNext() async {
+Future<void> _navigateToNext() async {
+  try {
     final accessToken = await SecureStorage.getAccessToken();
     final refreshToken = await SecureStorage.getRefreshToken();
 
     await Future.delayed(const Duration(seconds: 2));
-    if (mounted) {
-      if ((accessToken != null && accessToken.isNotEmpty) &&
-          (refreshToken != null && refreshToken.isNotEmpty)) {
-        Navigator.pushReplacement(
-          context,
-          PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) =>
-                const MainNavigationScreen(),
-            transitionsBuilder:
-                (context, animation, secondaryAnimation, child) {
-                  return FadeTransition(opacity: animation, child: child);
-                },
-          ),
-        );
-      }
-    } else {
-      Navigator.pushReplacement(
-        context,
-        PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) =>
-              const LoginScreen(),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(opacity: animation, child: child);
-          },
-        ),
-      );
-    }
+
+    if (!mounted) return;
+
+    final hasTokens =
+        accessToken != null &&
+        accessToken.isNotEmpty &&
+        refreshToken != null &&
+        refreshToken.isNotEmpty;
+
+    final Widget nextScreen = hasTokens
+        ? const MainNavigationScreen()
+        : const LoginScreen();
+
+    Navigator.pushReplacement(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            nextScreen,
+        transitionsBuilder:
+            (context, animation, secondaryAnimation, child) {
+          return FadeTransition(
+            opacity: animation,
+            child: child,
+          );
+        },
+      ),
+    );
+  } catch (e) {
+    if (!mounted) return;
+
+    // If reading tokens fails, navigate to Login.
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const LoginScreen(),
+      ),
+    );
   }
+}
 
   @override
   Widget build(BuildContext context) {

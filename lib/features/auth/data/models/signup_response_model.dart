@@ -1,3 +1,5 @@
+import 'package:ecommerce_app_huma_volve/features/auth/domain/entity/signup_entity.dart';
+
 class SignupResponseModel {
   int? id;
   String? email;
@@ -30,5 +32,17 @@ class SignupResponseModel {
     updatedAt = json['updatedAt'];
   }
 
+  SignupEntity toEntity() {
+    return SignupEntity(
+      id: id ?? 0,
+      email: email ?? "",
+      password: password ?? "",
+      name: name ?? "",
+      role: role ?? "",
+      avatar: avatar ?? "",
+      creationAt: creationAt ?? "",
+      updatedAt: updatedAt ?? "",
+    );
+  }
   
 }

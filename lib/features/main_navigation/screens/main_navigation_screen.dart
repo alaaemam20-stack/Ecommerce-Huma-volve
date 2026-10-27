@@ -33,6 +33,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   late final HomeRemoteDataSource homeRemoteDataSource;
   @override
   void initState() {
+    super.initState();
     apiClient = ApiClient();
     homeRemoteDataSource = HomeRemoteDataSourceImp(apiClient);
 
@@ -44,7 +45,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       getProductsUseCase: getProductUsecase,
     );
     homeCubit.loadData();
-    super.initState();
   }
 
   @override
