@@ -6,6 +6,6 @@ import 'package:ecommerce_app_huma_volve/features/home/domain/repo/home_repo.dar
 class GetProductUsecase {
   final HomeRepo homeRepo;
   GetProductUsecase(this.homeRepo);
- Future<Either<Failure,List<ProductEntity>>>invoke(int categoryId)=>homeRepo.getProducts(categoryId);
+ Future<Either<Failure,List<ProductEntity>>>invoke(int categoryId,{required int limit,required int offset})=>homeRepo.getProducts(categoryId, limit: limit, offset: offset);
 
 }

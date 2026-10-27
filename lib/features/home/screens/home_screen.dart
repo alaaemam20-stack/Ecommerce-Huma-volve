@@ -17,18 +17,31 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedCategoryIndex = 0;
-  // initState() {
-  //     super.initState();
-  //     // Load data when the screen is initialized
-  //     final homeCubit = context.read<HomeCubit>();
-  //     homeCubit.loadData();
-  //   }
+  late final ScrollController scrollController;
+  initState() {
+    super.initState();
+    scrollController = ScrollController();
+    scrollController.addListener(_onlisten);
+    // Load data when the screen is initialized
+    final homeCubit = context.read<HomeCubit>();
+    homeCubit.loadData();
+  }
+
+  void _onlisten() {
+    final pixels = scrollController.position.pixels;
+    final max = scrollController.position.maxScrollExtent;
+    final int triggerDistance=200;
+    print(" pixels: $pixels max: $max");
+    if(pixels>=max-triggerDistance){}
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.background,
       body: SafeArea(
         child: CustomScrollView(
+          controller: scrollController,
           slivers: [
             SliverToBoxAdapter(
               child: Padding(
@@ -150,9 +163,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                       _selectedCategoryIndex = index;
                                     });
 
-                                    context.read<HomeCubit>().getProductsByCategories(
-                                      categories[index].id,
-                                    );
+                                    context
+                                        .read<HomeCubit>()
+                                        .getProductsByCategories(
+                                          categories[index].id,
+                                        );
                                   },
                                 );
                               },
@@ -169,65 +184,54 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
-              sliver:BlocBuilder<HomeCubit, HomeStates>(
-  buildWhen: (previous, current) {
-    return current is HomeLoadingProductsState ||
-        current is HomeSuccessProductsState ||
-        current is HomeErrorProductsState;
-  },
-  builder: (context, state) {
-    if (state is HomeLoadingProductsState) {
-      return const SliverFillRemaining(
-        child: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
-    }
+              sliver: BlocBuilder<HomeCubit, HomeStates>(
+                buildWhen: (previous, current) {
+                  return current is HomeLoadingProductsState ||
+                      current is HomeSuccessProductsState ||
+                      current is HomeErrorProductsState;
+                },
+                builder: (context, state) {
+                  if (state is HomeLoadingProductsState) {
+                    return const SliverFillRemaining(
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  }
 
-    if (state is HomeErrorProductsState) {
-      return SliverFillRemaining(
-        child: Center(
-          child: Text(state.message),
-        ),
-      );
-    }
+                  if (state is HomeErrorProductsState) {
+                    return SliverFillRemaining(
+                      child: Center(child: Text(state.message)),
+                    );
+                  }
 
-    if (state is HomeSuccessProductsState) {
-      if (state.products.isEmpty) {
-        return const SliverFillRemaining(
-          child: Center(
-            child: Text('No products found in this category'),
-          ),
-        );
-      }
+                  if (state is HomeSuccessProductsState) {
+                    if (state.products.isEmpty) {
+                      return const SliverFillRemaining(
+                        child: Center(
+                          child: Text('No products found in this category'),
+                        ),
+                      );
+                    }
 
-      return SliverPadding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        sliver: SliverGrid(
-          gridDelegate:
-              const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            childAspectRatio: 0.7,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-          ),
-          delegate: SliverChildBuilderDelegate(
-            (context, index) {
-              return ProductCard(
-                product: state.products[index],
-              );
-            },
-            childCount: state.products.length,
-          ),
-        ),
-      );
-    }
+                    return SliverPadding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      sliver: SliverGrid(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              childAspectRatio: 0.7,
+                              crossAxisSpacing: 16,
+                              mainAxisSpacing: 16,
+                            ),
+                        delegate: SliverChildBuilderDelegate((context, index) {
+                          return ProductCard(product: state.products[index]);
+                        }, childCount: state.products.length),
+                      ),
+                    );
+                  }
 
-    return const SliverToBoxAdapter(
-      child: SizedBox.shrink(),
-    );
-  },
-),
+                  return const SliverToBoxAdapter(child: SizedBox.shrink());
+                },
+              ),
             ),
             const SliverToBoxAdapter(child: SizedBox(height: 24)),
           ],

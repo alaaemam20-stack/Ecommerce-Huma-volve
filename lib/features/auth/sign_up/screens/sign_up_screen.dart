@@ -4,10 +4,10 @@ import 'package:ecommerce_app_huma_volve/features/auth/peresentation/view_model/
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../../core/widgets/custom_text_field.dart';
-import '../../../../../core/widgets/primary_button.dart';
-import '../../../../../core/theme.dart';
-import 'login_screen.dart';
+import '../../../../core/widgets/custom_text_field.dart';
+import '../../../../core/widgets/primary_button.dart';
+import '../../../../core/theme.dart';
+import '../../peresentation/view/screens/login_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});

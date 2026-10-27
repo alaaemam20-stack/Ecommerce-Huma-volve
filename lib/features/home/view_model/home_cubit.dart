@@ -1,3 +1,4 @@
+import 'package:ecommerce_app_huma_volve/features/home/domain/entity/home_product_entity.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:ecommerce_app_huma_volve/features/home/view_model/home_state.dart';
@@ -7,6 +8,13 @@ import 'package:ecommerce_app_huma_volve/features/home/domain/use_case/get_produ
 class HomeCubit extends Cubit<HomeStates> {
   final GetCategoryUsecase getCategoriesUseCase;
   final GetProductUsecase getProductsUseCase;
+  final int limit = 10; // Number of products to fetch per request
+  int offset = 0; // Offset for pagination
+  bool isLoadingMore = false; // Flag to prevent multiple simultaneous requests
+  bool hasMoreProducts =
+      true; // Flag to indicate if there are more products to load
+  int? isSelectedCategory;
+  final List<ProductEntity> _products = [];
 
   HomeCubit({
     required this.getCategoriesUseCase,
@@ -39,17 +47,61 @@ class HomeCubit extends Cubit<HomeStates> {
   }
 
   Future<void> getProductsByCategories(int categoryId) async {
+    _products.clear();
+    offset = 0;
+    hasMoreProducts = true; // Reset the flag for more products
     emit(HomeLoadingProductsState());
 
-    final productResult = await getProductsUseCase.invoke(categoryId);
+    final productResult = await getProductsUseCase.invoke(
+      categoryId,
+      limit: limit,
+      offset: offset,
+    );
 
     productResult.fold(
       (failure) {
         emit(HomeErrorProductsState(failure.failureMessage));
       },
       (productList) {
-        emit(HomeSuccessProductsState(productList));
+        _products.addAll(productList);
+        offset = productList.length;
+        if (productList.length < limit) {
+          hasMoreProducts = false;
+           emit(HomeSuccessProductsState(List.from(_products)));
+        }
+
+       
       },
     );
+  }
+  Future<void> loadMoreProducts(int categoryId) async {
+    if (isLoadingMore || !hasMoreProducts) {
+      return; // Prevent multiple simultaneous requests or if no more products
+    }
+
+    isLoadingMore = true;
+    emit(HomeLoadingMoreProductsState());
+
+    final productResult = await getProductsUseCase.invoke(
+      categoryId,
+      limit: limit,
+      offset: offset,
+    );
+
+    productResult.fold(
+      (failure) {
+        emit(productsLodingMoreErrorState(message: failure.failureMessage));
+      },
+      (productList) {
+        _products.addAll(productList);
+        offset += productList.length;
+        if (productList.length < limit) {
+          hasMoreProducts = false; // No more products to load
+        }
+        emit(HomeSuccessProductsState(List.from(_products)));
+      },
+    );
+
+    isLoadingMore = false;
   }
 }
