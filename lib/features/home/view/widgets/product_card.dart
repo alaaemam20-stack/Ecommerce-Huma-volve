@@ -1,8 +1,8 @@
 import 'package:ecommerce_app_huma_volve/features/home/domain/entity/home_product_entity.dart';
 import 'package:flutter/material.dart';
 
-import '../../../core/theme.dart';
-import '../../details/screens/product_details_screen.dart';
+import '../../../../core/theme.dart';
+import '../../../details/peresentation/view/screens/product_details_screen.dart';
 
 class ProductCard extends StatelessWidget {
   final ProductEntity product;
@@ -16,21 +16,26 @@ class ProductCard extends StatelessWidget {
         : '';
 
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          PageRouteBuilder(
-            transitionDuration: const Duration(milliseconds: 500),
-            pageBuilder: (context, animation, secondaryAnimation) {
-              return ProductDetailsScreen(product: product);
-            },
-            transitionsBuilder:
-                (context, animation, secondaryAnimation, child) {
-                  return FadeTransition(opacity: animation, child: child);
-                },
-          ),
+     onTap: () {
+  Navigator.push(
+    context,
+    PageRouteBuilder(
+      transitionDuration: const Duration(milliseconds: 500),
+      pageBuilder: (context, animation, secondaryAnimation) {
+        return ProductDetailsScreen(
+          productId: product.id,
         );
       },
+      transitionsBuilder:
+          (context, animation, secondaryAnimation, child) {
+        return FadeTransition(
+          opacity: animation,
+          child: child,
+        );
+      },
+    ),
+  );
+},
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
