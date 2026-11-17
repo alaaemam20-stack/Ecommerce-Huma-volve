@@ -1,5 +1,4 @@
 import 'package:ecommerce_app_huma_volve/features/home/domain/entity/home_category_entitiy.dart';
-
 class CategoryModel extends CategoryEntity {
   CategoryModel({super.id, super.name});
 

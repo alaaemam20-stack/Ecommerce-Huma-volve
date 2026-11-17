@@ -1,6 +1,10 @@
 import 'package:ecommerce_app_huma_volve/core/network/api_client.dart';
-import 'package:ecommerce_app_huma_volve/features/home/data/data_source/home_remote_data_source.dart';
-import 'package:ecommerce_app_huma_volve/features/home/data/data_source/home_remote_data_source_imp.dart';
+import 'package:ecommerce_app_huma_volve/features/home/data/data_source/local_data_source/local_data_source.dart';
+import 'package:ecommerce_app_huma_volve/features/home/data/data_source/local_data_source/local_data_source_imp.dart';
+import 'package:ecommerce_app_huma_volve/features/home/data/data_source/remote_data_source/home_remote_data_source.dart';
+import 'package:ecommerce_app_huma_volve/features/home/data/data_source/remote_data_source/home_remote_data_source_imp.dart';
+import 'package:ecommerce_app_huma_volve/features/home/data/models/category_hive_model.dart';
+import 'package:ecommerce_app_huma_volve/features/home/data/models/product_cached_model.dart';
 import 'package:ecommerce_app_huma_volve/features/home/data/repo/home_repo_imp.dart';
 import 'package:ecommerce_app_huma_volve/features/home/domain/repo/home_repo.dart';
 import 'package:ecommerce_app_huma_volve/features/home/domain/use_case/get_category_usecase.dart';
@@ -9,6 +13,7 @@ import 'package:ecommerce_app_huma_volve/features/home/view_model/home_cubit.dar
 import 'package:ecommerce_app_huma_volve/features/home/service/home_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive/hive.dart';
 
 import '../../../core/theme.dart';
 import '../../home/screens/home_screen.dart';
@@ -31,13 +36,23 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   late HomeCubit homeCubit;
   late HomeService homeService;
   late final HomeRemoteDataSource homeRemoteDataSource;
+  late final HomeLocalDataSource homeLocalDataSource;
+
   @override
   void initState() {
     super.initState();
     apiClient = ApiClient();
     homeRemoteDataSource = HomeRemoteDataSourceImp(apiClient);
+    // 3. Create local data source using Hive
+    homeLocalDataSource = HomeLocalDataSourceImp(
+      categoryBox: Hive.box<CategoryHiveModel>('categories'),
+      productBox: Hive.box<ProductCachedModel>('products'),
+    );
 
-    homeRepo = HomeRepoImp(homeRemoteDataSource);
+    homeRepo = HomeRepoImp(
+      homeRemoteDataSource: homeRemoteDataSource,
+      homeLocalDataSource: homeLocalDataSource,
+    );
     getCategoryUsecase = GetCategoryUsecase(homeRepo);
     getProductUsecase = GetProductUsecase(homeRepo);
     homeCubit = HomeCubit(

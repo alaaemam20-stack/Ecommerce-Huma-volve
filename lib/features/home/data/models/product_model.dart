@@ -3,6 +3,7 @@ import 'package:ecommerce_app_huma_volve/features/home/domain/entity/home_produc
 
 import 'categories_model.dart';
 
+
 class ProductModel extends ProductEntity {
   ProductModel({
     super.id,
