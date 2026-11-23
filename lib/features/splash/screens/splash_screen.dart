@@ -18,51 +18,41 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     _navigateToNext();
   }
-Future<void> _navigateToNext() async {
-  try {
-    final accessToken = await SecureStorage.getAccessToken();
-    final refreshToken = await SecureStorage.getRefreshToken();
 
-    await Future.delayed(const Duration(seconds: 2));
+  Future<void> _navigateToNext() async {
+    try {
+      final accessToken = await SecureStorage.getAccessToken();
+      final refreshToken = await SecureStorage.getRefreshToken();
 
-    if (!mounted) return;
+      await Future.delayed(const Duration(seconds: 2));
 
-    final hasTokens =
-        accessToken != null &&
-        accessToken.isNotEmpty &&
-        refreshToken != null &&
-        refreshToken.isNotEmpty;
+      if (!mounted) return;
 
-    final Widget nextScreen = hasTokens
-        ? const MainNavigationScreen()
-        : const LoginScreen();
+      final hasToken = accessToken != null && accessToken.isNotEmpty;
 
-    Navigator.pushReplacement(
-      context,
-      PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) =>
-            nextScreen,
-        transitionsBuilder:
-            (context, animation, secondaryAnimation, child) {
-          return FadeTransition(
-            opacity: animation,
-            child: child,
-          );
-        },
-      ),
-    );
-  } catch (e) {
-    if (!mounted) return;
+      final Widget nextScreen = hasToken
+          ? const MainNavigationScreen()
+          : const LoginScreen();
 
-    // If reading tokens fails, navigate to Login.
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const LoginScreen(),
-      ),
-    );
+      Navigator.pushReplacement(
+        context,
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => nextScreen,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(opacity: animation, child: child);
+          },
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      // If reading tokens fails, navigate to Login.
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+      );
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {

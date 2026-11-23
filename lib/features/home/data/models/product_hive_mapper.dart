@@ -3,6 +3,7 @@ import 'product_hive_model.dart';
 import 'category_hive_model.dart';
 import '../../domain/entity/home_product_entity.dart';
 import '../../domain/entity/home_category_entitiy.dart';
+
 ProductHiveModel toHiveModel(ProductModel product) {
   return ProductHiveModel(
     id: product.id,
@@ -18,9 +19,7 @@ ProductHiveModel toHiveModel(ProductModel product) {
     creationAt: product.creationAt,
     updatedAt: product.updatedAt,
   );
-} 
-
-
+}
 
 ProductEntity toEntity(ProductHiveModel product) {
   return ProductEntity(
@@ -30,8 +29,8 @@ ProductEntity toEntity(ProductHiveModel product) {
     price: product.price,
     description: product.description,
     category: CategoryEntity(
-      id: product.category.id,
-      name: product.category.name,
+      id: product.category?.id ?? 0,
+      name: product.category?.name ?? "",
     ),
     images: product.images,
     creationAt: product.creationAt,

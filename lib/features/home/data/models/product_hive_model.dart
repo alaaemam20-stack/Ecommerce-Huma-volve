@@ -1,6 +1,7 @@
 import 'package:hive/hive.dart';
 import 'category_hive_model.dart';
 
+part 'product_hive_model.g.dart';
 
 @HiveType(typeId: 2)
 class ProductHiveModel {
@@ -20,7 +21,7 @@ class ProductHiveModel {
   final String description;
 
   @HiveField(5)
-  final CategoryHiveModel category;
+  final CategoryHiveModel? category;
 
   @HiveField(6)
   final List<String> images;
@@ -37,7 +38,7 @@ class ProductHiveModel {
     this.slug = '',
     this.price = 0,
     this.description = '',
-    required this.category,
+    this.category,
     this.images = const [],
     this.creationAt = '',
     this.updatedAt = '',

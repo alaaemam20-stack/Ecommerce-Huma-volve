@@ -1,8 +1,7 @@
 import 'package:hive/hive.dart';
+
+
 part 'category_hive_model.g.dart';
-
-
-
 @HiveType(typeId: 0)
 class CategoryHiveModel {
   @HiveField(0)
